@@ -1,0 +1,29 @@
+name: Jekyll Build Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["master"]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.328.0
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+      - name: Build with Jekyll
+        run: bundle exec jekyll build --baseurl "/LJT-Homepage"
+        env:
+          JEKYLL_ENV: production
+      - name: Verify key output
+        run: |
+          test -f _site/index.html
+          test -d _site/publications
+          ls -1 _site/publications
+          ls -1 _site/publication | head -20
+          grep -c "SynLogic" _site/index.html
